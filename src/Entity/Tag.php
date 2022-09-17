@@ -12,6 +12,7 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * Defines the properties of the Tag entity to represent the post tags.
@@ -22,14 +23,16 @@ use Doctrine\ORM\Mapping as ORM;
  */
 #[ORM\Entity]
 #[ORM\Table(name: 'symfony_demo_tag')]
-class Tag implements \JsonSerializable
+class Tag
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
+    #[Groups(groups: ['posts.show'])]
     private ?int $id = null;
 
     #[ORM\Column(type: 'string', unique: true)]
+    #[Groups(groups: ['posts.show'])]
     private ?string $name = null;
 
     public function getId(): ?int
@@ -44,18 +47,6 @@ class Tag implements \JsonSerializable
 
     public function getName(): ?string
     {
-        return $this->name;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function jsonSerialize(): string
-    {
-        // This entity implements JsonSerializable (http://php.net/manual/en/class.jsonserializable.php)
-        // so this method is used to customize its JSON representation when json_encode()
-        // is called, for example in tags|json_encode (templates/form/fields.html.twig)
-
         return $this->name;
     }
 

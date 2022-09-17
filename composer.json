@@ -35,6 +35,7 @@
         "symfony/polyfill-intl-messageformatter": "^1.12",
         "symfony/runtime": "^6.1",
         "symfony/security-bundle": "^6.1",
+        "symfony/serializer": "6.1.*",
         "symfony/string": "^6.1",
         "symfony/translation": "^6.1",
         "symfony/twig-bundle": "^6.1",

@@ -16,6 +16,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -38,30 +39,37 @@ class Post
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
+    #[Groups(groups: ['posts.show'])]
     private ?int $id = null;
 
     #[ORM\Column(type: 'string')]
     #[Assert\NotBlank]
+    #[Groups(groups: ['posts.show'])]
     private ?string $title = null;
 
     #[ORM\Column(type: 'string')]
+    #[Groups(groups: ['posts.show'])]
     private ?string $slug = null;
 
     #[ORM\Column(type: 'string')]
     #[Assert\NotBlank(message: 'post.blank_summary')]
     #[Assert\Length(max: 255)]
+    #[Groups(groups: ['posts.show'])]
     private ?string $summary = null;
 
     #[ORM\Column(type: 'text')]
     #[Assert\NotBlank(message: 'post.blank_content')]
     #[Assert\Length(min: 10, minMessage: 'post.too_short_content')]
+    #[Groups(groups: ['posts.show'])]
     private ?string $content = null;
 
     #[ORM\Column(type: 'datetime')]
+    #[Groups(groups: ['posts.show'])]
     private \DateTime $publishedAt;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(groups: ['posts.show'])]
     private ?User $author = null;
 
     /**
@@ -78,6 +86,7 @@ class Post
     #[ORM\JoinTable(name: 'symfony_demo_post_tag')]
     #[ORM\OrderBy(['name' => 'ASC'])]
     #[Assert\Count(max: 4, maxMessage: 'post.too_many_tags')]
+    #[Groups(groups: ['posts.show'])]
     private Collection $tags;
 
     public function __construct()
@@ -187,5 +196,25 @@ class Post
     public function getTags(): Collection
     {
         return $this->tags;
+    }
+
+    private array $en_days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    private array $fr_days = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
+
+    private array $en_months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    private array $fr_months = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Aout', 'Septembre', 'Octobre', 'Novembre', 'Decembre'];
+
+    #[Groups(groups: ['posts.show'])]
+    public function getPublishedAtLocal(string $format = 'l j F Y'): string
+    {
+        return str_replace(
+            $this->en_months,
+            $this->fr_months,
+            str_replace(
+                $this->en_days,
+                $this->fr_days,
+                $this->publishedAt->format($format)
+            )
+        );
     }
 }
